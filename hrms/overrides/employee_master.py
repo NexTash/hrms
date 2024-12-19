@@ -28,13 +28,13 @@ class EmployeeMaster(Employee):
 
 def validate_onboarding_process(doc, method=None):
 	"""Validates Employee Creation for linked Employee Onboarding"""
-	if not doc.job_applicant:
+	if not doc.get("job_applicant"):
 		return
 
 	employee_onboarding = frappe.get_all(
 		"Employee Onboarding",
 		filters={
-			"job_applicant": doc.job_applicant,
+			"job_applicant": doc.get("job_applicant"),
 			"docstatus": 1,
 			"boarding_status": ("!=", "Completed"),
 		},
@@ -53,22 +53,22 @@ def publish_update(doc, method=None):
 
 def update_job_applicant_and_offer(doc, method=None):
 	"""Updates Job Applicant and Job Offer status as 'Accepted' and submits them"""
-	if not doc.job_applicant:
+	if not doc.get("job_applicant"):
 		return
 
-	applicant_status_before_change = frappe.db.get_value("Job Applicant", doc.job_applicant, "status")
+	applicant_status_before_change = frappe.db.get_value("Job Applicant", doc.get("job_applicant"), "status")
 	if applicant_status_before_change != "Accepted":
-		frappe.db.set_value("Job Applicant", doc.job_applicant, "status", "Accepted")
+		frappe.db.set_value("Job Applicant", doc.get("job_applicant"), "status", "Accepted")
 		frappe.msgprint(
 			_("Updated the status of linked Job Applicant {0} to {1}").format(
-				get_link_to_form("Job Applicant", doc.job_applicant), frappe.bold(_("Accepted"))
+				get_link_to_form("Job Applicant", doc.get("job_applicant")), frappe.bold(_("Accepted"))
 			)
 		)
 	offer_status_before_change = frappe.db.get_value(
-		"Job Offer", {"job_applicant": doc.job_applicant, "docstatus": ["!=", 2]}, "status"
+		"Job Offer", {"job_applicant": doc.get("job_applicant"), "docstatus": ["!=", 2]}, "status"
 	)
 	if offer_status_before_change and offer_status_before_change != "Accepted":
-		job_offer = frappe.get_last_doc("Job Offer", filters={"job_applicant": doc.job_applicant})
+		job_offer = frappe.get_last_doc("Job Offer", filters={"job_applicant": doc.get("job_applicant")})
 		job_offer.status = "Accepted"
 		job_offer.flags.ignore_mandatory = True
 		job_offer.flags.ignore_permissions = True
@@ -76,7 +76,7 @@ def update_job_applicant_and_offer(doc, method=None):
 
 		msg = _("Updated the status of Job Offer {0} for the linked Job Applicant {1} to {2}").format(
 			get_link_to_form("Job Offer", job_offer.name),
-			frappe.bold(doc.job_applicant),
+			frappe.bold(doc.get("job_applicant")),
 			frappe.bold(_("Accepted")),
 		)
 		if job_offer.docstatus == 0:

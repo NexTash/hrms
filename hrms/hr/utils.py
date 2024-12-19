@@ -708,7 +708,7 @@ def validate_active_employee(employee, method=None):
 
 
 def validate_loan_repay_from_salary(doc, method=None):
-	if doc.applicant_type == "Employee" and doc.repay_from_salary:
+	if doc.applicant_type == "Employee" and doc.get("repay_from_salary"):
 		from hrms.payroll.doctype.salary_structure_assignment.salary_structure_assignment import (
 			get_employee_currency,
 		)
@@ -728,7 +728,7 @@ def validate_loan_repay_from_salary(doc, method=None):
 				).format(doc.applicant, employee_currency)
 			)
 
-	if not doc.is_term_loan and doc.repay_from_salary:
+	if not doc.is_term_loan and doc.get("repay_from_salary"):
 		frappe.throw(_("Repay From Salary can be selected only for term loans"))
 
 
