@@ -773,8 +773,11 @@ class SalarySlip(TransactionBase):
 			self.base_gross_pay = flt(
 				flt(self.gross_pay) * flt(self.exchange_rate), self.precision("base_gross_pay")
 			)
+		
+		if not getattr(self, "_salary_structure_doc", None):
+			self.set_salary_structure_doc()
 
-		if self.salary_structure:
+		if not len(self.earnings) and self.salary_structure:
 			self.calculate_component_amounts("earnings")
 
 		# get remaining numbers of sub-period (period for which one salary is processed)
@@ -791,7 +794,7 @@ class SalarySlip(TransactionBase):
 
 		set_gross_pay_and_base_gross_pay()
 
-		if self.salary_structure:
+		if not len(self.deductions) and self.salary_structure:
 			self.calculate_component_amounts("deductions")
 
 		set_loan_repayment(self)

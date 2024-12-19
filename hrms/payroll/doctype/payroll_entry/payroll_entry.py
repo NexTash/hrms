@@ -57,7 +57,7 @@ class PayrollEntry(Document):
 
 	def before_submit(self):
 		self.validate_existing_salary_slips()
-		self.validate_payroll_payable_account()
+		# self.validate_payroll_payable_account()
 		if self.get_employees_with_unmarked_attendance():
 			frappe.throw(_("Cannot submit. Attendance is not marked for some employees."))
 
