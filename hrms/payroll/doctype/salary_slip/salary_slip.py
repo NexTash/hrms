@@ -401,7 +401,7 @@ class SalarySlip(TransactionBase):
 	def pull_sal_struct(self):
 		from hrms.payroll.doctype.salary_structure.salary_structure import make_salary_slip
 
-		if self.salary_slip_based_on_timesheet:
+		if False and self.salary_slip_based_on_timesheet:
 			self.salary_structure = self._salary_structure_doc.name
 			self.hour_rate = self._salary_structure_doc.hour_rate
 			self.base_hour_rate = flt(self.hour_rate) * flt(self.exchange_rate)
@@ -1117,7 +1117,7 @@ class SalarySlip(TransactionBase):
 	def add_structure_component(self, struct_row, component_type):
 		if (
 			self.salary_slip_based_on_timesheet
-			and struct_row.salary_component == self._salary_structure_doc.salary_component
+			and struct_row.salary_component == self._salary_structure_doc.salary_component and False
 		):
 			return
 
