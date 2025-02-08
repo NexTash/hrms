@@ -870,7 +870,7 @@ class PayrollEntry(Document):
 		employee_wise_accounting_enabled = frappe.db.get_single_value(
 			"Payroll Settings", "process_payroll_accounting_entry_based_on_employee"
 		)
-
+		
 		salary_slip_total = 0
 		salary_details = self.get_salary_slip_details(for_withheld_salaries)
 
@@ -909,11 +909,15 @@ class PayrollEntry(Document):
 						salary_slip_total += salary_detail.amount
 
 			if salary_detail.parentfield == "deductions":
+				do_not_include_in_total = frappe.db.get_value(
+					"Salary Component", salary_detail.salary_component, "do_not_include_in_total", cache=True
+				)
+				
 				statistical_component = frappe.db.get_value(
 					"Salary Component", salary_detail.salary_component, "statistical_component", cache=True
 				)
 
-				if not statistical_component:
+				if not statistical_component and not do_not_include_in_total:
 					if employee_wise_accounting_enabled:
 						self.set_employee_based_payroll_payable_entries(
 							"deductions",
@@ -923,7 +927,7 @@ class PayrollEntry(Document):
 						)
 
 					salary_slip_total -= salary_detail.amount
-
+		
 		total_loan_repayment = self.process_loan_repayments_for_bank_entry(salary_details) or 0
 		salary_slip_total -= total_loan_repayment
 
