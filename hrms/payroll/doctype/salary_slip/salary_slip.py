@@ -1940,7 +1940,8 @@ class SalarySlip(TransactionBase):
 	def set_totals(self):
 		self.gross_pay = 0.0
 		if self.salary_slip_based_on_timesheet == 1:
-			self.calculate_total_for_salary_slip_based_on_timesheet()
+			pass
+			# self.calculate_total_for_salary_slip_based_on_timesheet()
 		else:
 			self.total_deduction = 0.0
 			if hasattr(self, "earnings"):

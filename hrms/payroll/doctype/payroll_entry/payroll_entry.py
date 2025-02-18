@@ -1033,12 +1033,17 @@ class PayrollEntry(Document):
 					employee, employee_details.get("salary_structure")
 				)
 
+				payroll_payable_account_ss = frappe.db.get_value("Salary Structure Assignment", {"employee": employee, "docstatus": 1}, "payroll_payable_account")
+				if not payroll_payable_account_ss:
+					frappe.throw(_("Salary Structure not found for Employee: {0}").format(employee))
+
+				
 				for cost_center, percentage in cost_centers.items():
 					amount_against_cost_center = flt(amount) * percentage / 100
 					accounts.append(
 						self.update_accounting_dimensions(
 							{
-								"account": payroll_payable_account,
+								"account": payroll_payable_account_ss,
 								"debit_in_account_currency": flt(amount_against_cost_center, precision),
 								"exchange_rate": flt(exchange_rate),
 								"reference_type": self.doctype,
