@@ -773,6 +773,11 @@ class SalarySlip(TransactionBase):
 			self.base_gross_pay = flt(
 				flt(self.gross_pay) * flt(self.exchange_rate), self.precision("base_gross_pay")
 			)
+
+			if hasattr(self, "additional_salary"):
+				self.total_additional_salary = sum(flt(d.amount) for d in self.additional_salary)
+				self.gross_pay += flt(self.total_additional_salary, self.precision("total_additional_salary"))
+
 		
 		if not getattr(self, "_salary_structure_doc", None):
 			self.set_salary_structure_doc()
