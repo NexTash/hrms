@@ -10,6 +10,8 @@ from frappe.installer import update_site_config
 
 from hrms.overrides.company import delete_company_fixtures
 
+def create_fields():
+	create_custom_fields(get_custom_fields(), ignore_validate=True)
 
 def after_install():
 	create_custom_fields(get_custom_fields(), ignore_validate=True)

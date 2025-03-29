@@ -1991,14 +1991,14 @@ class SalarySlip(TransactionBase):
 	def compute_year_to_date(self):
 		year_to_date = 0
 		period_start_date, period_end_date = self.get_year_to_date_period()
-
+		
 		salary_slip_sum = frappe.get_list(
 			"Salary Slip",
 			fields=["sum(net_pay) as net_sum", "sum(gross_pay) as gross_sum"],
 			filters={
 				"employee": self.employee,
-				"start_date": [">=", period_start_date],
-				"end_date": ["<", period_end_date],
+				"posting_date": ["between", [period_start_date, self.posting_date]],
+				# "end_date": ["<", period_end_date],
 				"name": ["!=", self.name],
 				"docstatus": 1,
 			},
@@ -2066,7 +2066,7 @@ class SalarySlip(TransactionBase):
 			period_end_date = self.payroll_period.end_date
 		else:
 			# get dates based on fiscal year if no payroll period exists
-			fiscal_year = get_fiscal_year(date=self.start_date, company=self.company, as_dict=1)
+			fiscal_year = get_fiscal_year(date=self.posting_date, company=self.company, as_dict=1)
 			period_start_date = fiscal_year.year_start_date
 			period_end_date = fiscal_year.year_end_date
 
